@@ -5,8 +5,37 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:apollo_launcher"
         mc:Ignorable="d"
-        Title="Apollo" Height="300" Width="300">
-    <Grid>
-        
-    </Grid>
+        Title="Apollo" Height="300" Width="300" Icon="/rocket.png"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent">
+
+    <Border CornerRadius="10" Background="White">
+        <!-- window properties -->
+        <Grid Height="15" VerticalAlignment="Top" Margin="0,10,0,0">
+            <!-- top of window -->
+            
+            <Grid.RowDefinitions>
+                <RowDefinition Height="15"/>
+            </Grid.RowDefinitions>
+
+            <Rectangle x:Name="resizeBar" Fill="Transparent" MouseDown="resizeBar_MouseDown" Margin="0,-10,0,0"/>
+
+            <Button x:Name="close" Grid.Row="1" Width="15" Height="15" Margin="280,0,0,0" Background="Red" Click="Close_Click">
+                <Button.Resources>
+                    <Style TargetType="Border">
+                        <Setter Property="CornerRadius" Value="3.5"/>
+                    </Style>
+                </Button.Resources>
+            </Button>
+
+            <Button x:Name="minimize" Grid.Row="1" Width="15" Height="15" Margin="235,0,0,0" Background="Yellow" Click="Min_Click">
+                <Button.Resources>
+                    <Style TargetType="Border">
+                        <Setter Property="CornerRadius" Value="3.5"/>
+                    </Style>
+                </Button.Resources>
+            </Button>
+        </Grid>
+    </Border>
 </Window>
