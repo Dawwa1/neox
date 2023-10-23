@@ -1,4 +1,4 @@
-# Apollo Launcher 🚀
+# Apollo Launcher | DEV 🚀
 
 A simple game launcher that allows you to manage and launch all your games from one place!
 
