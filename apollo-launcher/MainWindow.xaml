@@ -12,27 +12,22 @@
 
     <Window.Template>
         <ControlTemplate TargetType="Window">
-            <Border CornerRadius="10">
+            <Border Background="#a4a4a4">
                 <!-- window properties -->
-
-                <Border.Background>
-                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                        <GradientStop Color="#c6c6c6" Offset="1" />
-                        <GradientStop Color="#696969" Offset="0" />
-                    </LinearGradientBrush>
-                </Border.Background>
 
                 <Grid VerticalAlignment="Top" Margin="0,10,0,0">
                     <!-- top of window -->
 
                     <Grid.RowDefinitions>
                         <RowDefinition Height="15"/>
-                        <RowDefinition Height="275"/>
+                        <RowDefinition Height="260"/>
                     </Grid.RowDefinitions>
 
-                    <Rectangle x:Name="resizeBar" Grid.Row="0" Fill="Transparent" MouseDown="resizeBar_MouseDown" Margin="0,-10,0,0"/>
+                    <Rectangle x:Name="resizeBar" Grid.Row="0" Fill="#787878" MouseDown="resizeBar_MouseDown" Margin="0,-10,0,0">
 
-                    <Button x:Name="close" Grid.Row="0" Width="15" Height="15" Margin="280,-10,0,0" BorderThickness="0" Background="Red" Click="Close_Click">
+                    </Rectangle>
+
+                    <Button x:Name="close" Grid.Row="0" Width="15" Height="15" Margin="275,-10,0,0" BorderThickness="0" Background="Red" Click="Close_Click">
                         <Button.Resources>
                             <Style TargetType="Border">
                                 <Setter Property="CornerRadius" Value="10"/>
@@ -53,11 +48,32 @@
             </Border>
         </ControlTemplate>
     </Window.Template>
-    <Grid Background="ForestGreen">
+    <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
         <!-- main content grid -->
         <Grid.RowDefinitions>
-            <RowDefinition />
-            <RowDefinition />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
+
+        <Grid Name="gamesGrid" Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+        </Grid>
+
+        <Grid Grid.Row="1" VerticalAlignment="Bottom">
+            <Button Content="Add Game" Margin="0,10,203,-15" Click="addGame_Click"/>
+        </Grid>
+
     </Grid>
 </Window>
