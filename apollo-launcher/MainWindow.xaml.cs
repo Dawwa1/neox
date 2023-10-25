@@ -54,37 +54,69 @@ namespace apollo_launcher
         private void addGame_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
-            ofd.ShowDialog();
             ofd.Filter = "Executables (*.exe)|*.exe";
             ofd.Multiselect = false;
 
-            string[] name_split = ofd.FileName.Split("\\");
-            //string name = "../" + name_split[name_split.Length - 2] + "/" + name_split[name_split.Length - 1];
+            if (ofd.ShowDialog() == true)
+            {
+                string[] name_split = ofd.FileName.Split("\\");
+                string[] name_tmp = name_split[name_split.Length - 1].Split(".")[..^1];
+                string name = string.Join(string.Empty, name_tmp);
+                string path = ofd.FileName;
+                Game game = new Game(name, path);
 
-            string name = name_split[name_split.Length - 1];
-            string path = ofd.FileName;
-            Game game = new Game(name, path);
-            games.Add(game);
+                NameInput nameInputDialog = new NameInput(game.Name);
+                if (nameInputDialog.ShowDialog() == true) { game.Name = nameInputDialog.Answer; }
+                else { return; }
 
-            // Add to column/row
-            addGameToView(game);
+                games.Add(game);
+
+                // Add to column/row
+                addGameToView(game);
+                if (games.Count == 16)
+                {
+                    disableBtn(addGame_btn);
+                }
+            }
         }
+
+        //private Button createButton(string name, RoutedEventHandler clickHandler)
+        //{
+        //    Button button = new Button();
+        //
+        //    return button;
+        //}
 
         private void addGameToView(Game game)
         {
-            Button button = new Button();
             if (game.Icon == null)
             {
-                button.Content = game.Name;
+                Button button = new Button
+                {
+                    Content = game.Name,
+                    ContextMenu = new ContextMenu(),
+                };
+                button.Click += new RoutedEventHandler(onImage_Click);
+                //button.ContextMenu = new ContextMenu();
+                MenuItem deleteMi = new MenuItem();
+                deleteMi.Header = "Delete";
+                deleteMi.Click += deleteMi_Click;
+                button.ContextMenu.Items.Add(deleteMi);
 
                 if (gamesGrid.Children.Count > 0) {
-                    foreach (UIElementCollection child in gamesGrid.Children)
-                    {
-                        foreach (UIElement element in child)
-                        {
-                            Debug.Write(element.ToString());
-                        }
-                    }
+                    var child = gamesGrid.Children[gamesGrid.Children.Count - 1];
+
+                    int row = Grid.GetRow(child);
+                    int col = Grid.GetColumn(child);
+                    //int col = Grid.GetColumn(child);
+                    if (col == 3) { row += 1; col = 0; }
+                    else { col += 1; }
+
+                    Grid.SetColumn(button, col);
+                    Grid.SetRow(button, row);
+                    gamesGrid.Children.Add(button);
+                    game.buttonRow = row;
+                    game.buttonColumn = col;
                 } else
                 {
                     Grid.SetColumn(button, 0);
@@ -94,9 +126,49 @@ namespace apollo_launcher
             }
         }
 
+        private void deleteMi_Click(object sender, RoutedEventArgs e)
+        {
+            MenuItem menuItem = (MenuItem)sender;
+            ContextMenu contextMenu = (ContextMenu)menuItem.Parent;
+            Button button = (Button)contextMenu.PlacementTarget;
+
+            foreach (Game game in games)
+            {
+                if (game.buttonColumn == Grid.GetColumn(button) && game.buttonRow == Grid.GetRow(button))
+                {
+                    games.Remove(game);
+                    gamesGrid.Children.Remove(button);
+                    break;
+                }
+            }
+        }
+
+        private Game getGameFromButton(Button button)
+        {
+            foreach (Game game in games)
+            {
+                if (game.buttonColumn == Grid.GetColumn(button) && game.buttonRow == Grid.GetRow(button))
+                {
+                    return game;
+                }
+            }
+
+            return new Game(null, null);
+        }
+
+        private void disableBtn(Button btn)
+        {
+            btn.Opacity = 0.3;
+            btn.IsEnabled = false;
+        }
+
         private void onImage_Click(object sender, RoutedEventArgs e)
         {
-
+            Button btn = (Button)sender;
+            if (MessageBox.Show("Are you sure you want to launch " + btn.Content) == MessageBoxResult.OK)
+            {
+                Process.Start(getGameFromButton(btn).Path);
+            }
         }
     }
 }

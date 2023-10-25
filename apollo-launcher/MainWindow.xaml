@@ -50,6 +50,7 @@
     </Window.Template>
     <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
         <!-- main content grid -->
+        
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="auto"/>
@@ -72,7 +73,7 @@
         </Grid>
 
         <Grid Grid.Row="1" VerticalAlignment="Bottom">
-            <Button Content="Add Game" Margin="0,10,203,-15" Click="addGame_Click"/>
+            <Button Name="addGame_btn" Content="Add Game" Margin="0,10,203,-15" Click="addGame_Click"/>
         </Grid>
 
     </Grid>

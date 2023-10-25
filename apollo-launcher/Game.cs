@@ -14,7 +14,9 @@ namespace apollo_launcher
         public string Name { get; set; }
         public string Path { get; set; }
         public string Icon { get; set; }
-        public Game(string name, string path, string icon = null)
+        public int buttonRow { get; set; }
+        public int buttonColumn { get; set; }
+        public Game(string name, string path, int btn_row = 0, int btn_col = 0, string icon = null)
         {
             Name = name;
             Path = path;
