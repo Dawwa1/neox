@@ -27,6 +27,10 @@
 
                     </Rectangle>
 
+                    <ToolBar Margin="0,10,0,-10">
+                        
+                    </ToolBar>
+
                     <Button x:Name="close" Grid.Row="0" Width="15" Height="15" Margin="275,-10,0,0" BorderThickness="0" Background="Red" Click="Close_Click">
                         <Button.Resources>
                             <Style TargetType="Border">
@@ -48,7 +52,7 @@
             </Border>
         </ControlTemplate>
     </Window.Template>
-    <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+    <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0,10,0,0">
         <!-- main content grid -->
         
         <Grid.RowDefinitions>

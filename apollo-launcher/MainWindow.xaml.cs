@@ -3,20 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using static apollo_launcher.Game;
 
 namespace apollo_launcher
 {
@@ -27,10 +16,21 @@ namespace apollo_launcher
     {
 
         public List<Game> games = new List<Game>();
+        public JsonStorageManager jsm;
 
         public MainWindow()
         {
             InitializeComponent();
+            string path = AppDomain.CurrentDomain.BaseDirectory + "\\manifests";
+            jsm = new JsonStorageManager(path);
+
+            if (Directory.GetFiles(path).Length > 0)
+            {
+                foreach (string file in Directory.GetFiles(path))
+                {
+                    jsm.readGameFile(); // TODO: read manifests into list, than deserialize list into buttons on grid | create function for creating button at specifc col/row pair
+                }
+            }
         }
 
         private void Close_Click(object sender, RoutedEventArgs e)
@@ -114,15 +114,19 @@ namespace apollo_launcher
 
                     Grid.SetColumn(button, col);
                     Grid.SetRow(button, row);
-                    gamesGrid.Children.Add(button);
+
                     game.buttonRow = row;
                     game.buttonColumn = col;
+
+                    jsm.addNewGameFile(game);
+
                 } else
                 {
                     Grid.SetColumn(button, 0);
                     Grid.SetRow(button, 0);
-                    gamesGrid.Children.Add(button);
                 }
+
+                gamesGrid.Children.Add(button);
             }
         }
 
@@ -131,16 +135,10 @@ namespace apollo_launcher
             MenuItem menuItem = (MenuItem)sender;
             ContextMenu contextMenu = (ContextMenu)menuItem.Parent;
             Button button = (Button)contextMenu.PlacementTarget;
+            Game game = getGameFromButton(button);
 
-            foreach (Game game in games)
-            {
-                if (game.buttonColumn == Grid.GetColumn(button) && game.buttonRow == Grid.GetRow(button))
-                {
-                    games.Remove(game);
-                    gamesGrid.Children.Remove(button);
-                    break;
-                }
-            }
+            games.Remove(game);
+            gamesGrid.Children.Remove(button);
         }
 
         private Game getGameFromButton(Button button)
