@@ -1,4 +1,4 @@
-# Apollo Launcher | DEV 🚀
+# Apollo Launcher
 
 A simple game launcher that allows you to manage and launch all your games from one place!
 
@@ -9,4 +9,8 @@ A simple game launcher that allows you to manage and launch all your games from 
 - Non-DRM
 
 # Prerequisites
-Requires [.NET 6](https://github.com/dotnet/core/blob/main/release-notes/6.0/install-windows.md) and [supported Windows versions](https://github.com/dotnet/core/blob/main/release-notes/6.0/supported-os.md)
+### To build:
+- Requires [.NET 6](https://github.com/dotnet/core/blob/main/release-notes/6.0/install-windows.md), Visual Studio 2022, [supported Windows versions](https://github.com/dotnet/core/blob/main/release-notes/6.0/supported-os.md)
+
+### To run compiled:
+- [supported Windows versions](https://github.com/dotnet/core/blob/main/release-notes/6.0/supported-os.md)
