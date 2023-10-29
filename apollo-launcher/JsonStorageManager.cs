@@ -3,7 +3,8 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.IO;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
+using System.Diagnostics;
 
 namespace apollo_launcher
 {
@@ -28,6 +29,7 @@ namespace apollo_launcher
 
         public void addNewGameFile(Game game)
         {
+
             var j = new JsonObject()
             {
                 ["title"] = game.Name,
@@ -38,7 +40,7 @@ namespace apollo_launcher
             var jOptions = new JsonSerializerOptions() { WriteIndented = true };
             var jString = j.ToJsonString(jOptions);
 
-            File.WriteAllText(JsonFolderPath + "\\" + game.Name + (Directory.GetFiles(JsonFolderPath).Length + 1).ToString() + ".json", jString);
+            File.WriteAllText(JsonFolderPath + "\\" + game.Name + ".json", jString);
         }
 
         public void removeGameFile(Game game)
@@ -54,7 +56,6 @@ namespace apollo_launcher
 
         public GameFile readGameFile(Game ?game = null, string ?path = null)
         {
-            GameFile gameFileJson;
             string jString;
             if (game != null)
             {
@@ -65,7 +66,9 @@ namespace apollo_launcher
                 jString = File.ReadAllText(path);
             }
 
-            gameFileJson = JsonSerializer.Deserialize<GameFile>(jString);
+            GameFile gameFileJson = JsonConvert.DeserializeObject<GameFile>(jString);
+            Debug.WriteLine(jString);
+            Debug.WriteLine(gameFileJson);
             return gameFileJson;
         }
 

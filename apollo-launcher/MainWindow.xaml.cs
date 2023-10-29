@@ -22,13 +22,16 @@ namespace apollo_launcher
         {
             InitializeComponent();
             string path = AppDomain.CurrentDomain.BaseDirectory + "\\manifests";
+            if (!Directory.Exists(path)) { Directory.CreateDirectory(path); }
             jsm = new JsonStorageManager(path);
 
             if (Directory.GetFiles(path).Length > 0)
             {
                 foreach (string file in Directory.GetFiles(path))
                 {
-                    jsm.readGameFile(); // TODO: read manifests into list, than deserialize list into buttons on grid | create function for creating button at specifc col/row pair
+                    GameFile j = jsm.readGameFile(path: file);
+                    Game game = new Game(j.title, j.target);
+                    addGame(game); // worked first try /s
                 }
             }
         }
@@ -63,16 +66,17 @@ namespace apollo_launcher
                 string[] name_tmp = name_split[name_split.Length - 1].Split(".")[..^1];
                 string name = string.Join(string.Empty, name_tmp);
                 string path = ofd.FileName;
+
+                if (File.Exists(jsm.JsonFolderPath + name + ".json")) { return; }
+
                 Game game = new Game(name, path);
 
                 NameInput nameInputDialog = new NameInput(game.Name);
                 if (nameInputDialog.ShowDialog() == true) { game.Name = nameInputDialog.Answer; }
                 else { return; }
 
-                games.Add(game);
-
                 // Add to column/row
-                addGameToView(game);
+                addGame(game);
                 if (games.Count == 16)
                 {
                     disableBtn(addGame_btn);
@@ -80,16 +84,10 @@ namespace apollo_launcher
             }
         }
 
-        //private Button createButton(string name, RoutedEventHandler clickHandler)
-        //{
-        //    Button button = new Button();
-        //
-        //    return button;
-        //}
-
-        private void addGameToView(Game game)
+        private void addGame(Game game)
         {
-            if (game.Icon == null)
+
+            if (game.Icon == null)  // Can't add custom icons yet
             {
                 Button button = new Button
                 {
@@ -126,7 +124,9 @@ namespace apollo_launcher
                     Grid.SetRow(button, 0);
                 }
 
+                games.Add(game);
                 gamesGrid.Children.Add(button);
+                jsm.addNewGameFile(game);
             }
         }
 
