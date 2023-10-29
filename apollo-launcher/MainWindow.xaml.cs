@@ -67,7 +67,7 @@ namespace apollo_launcher
                 string name = string.Join(string.Empty, name_tmp);
                 string path = ofd.FileName;
 
-                if (File.Exists(jsm.JsonFolderPath + name + ".json")) { return; }
+                if (File.Exists(jsm.JsonFolderPath + "\\" + name + ".json")) { MessageBox.Show("Application by that name exists!"); return; }
 
                 Game game = new Game(name, path);
 
@@ -95,7 +95,6 @@ namespace apollo_launcher
                     ContextMenu = new ContextMenu(),
                 };
                 button.Click += new RoutedEventHandler(onImage_Click);
-                //button.ContextMenu = new ContextMenu();
                 MenuItem deleteMi = new MenuItem();
                 deleteMi.Header = "Delete";
                 deleteMi.Click += deleteMi_Click;
@@ -139,6 +138,7 @@ namespace apollo_launcher
 
             games.Remove(game);
             gamesGrid.Children.Remove(button);
+            jsm.removeGameFile(game);
         }
 
         private Game getGameFromButton(Button button)
