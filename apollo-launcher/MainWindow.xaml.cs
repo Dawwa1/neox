@@ -1,8 +1,11 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Data.Common;
 using System.Diagnostics;
 using System.IO;
+using System.Net.Http;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -162,10 +165,42 @@ namespace apollo_launcher
 
         private void onImage_Click(object sender, RoutedEventArgs e)
         {
-            Button btn = (Button)sender;
-            if (MessageBox.Show("Are you sure you want to launch " + btn.Content) == MessageBoxResult.OK)
+            try
             {
-                Process.Start(getGameFromButton(btn).Path);
+                Button btn = (Button)sender;
+                if (MessageBox.Show("Are you sure you want to launch " + btn.Content) == MessageBoxResult.OK)
+                {
+                    Process.Start(getGameFromButton(btn).Path);
+                }
+            }
+            catch (Exception exception) {
+                writeErrorLog(exception);
+            }
+        }
+
+        private void writeErrorLog(Exception exception)
+        {
+            string logfile = AppDomain.CurrentDomain.BaseDirectory + "log.txt";
+            try
+            {
+                if (!File.Exists(logfile))
+                    File.Create(logfile);
+
+
+                using (var writer = new StreamWriter(logfile, true))
+                {
+                    writer.WriteLine(
+                        "=>{0} An Error occurred: {1}  Message: {2}{3}",
+                        DateTime.Now,
+                        exception.StackTrace,
+                        exception.Message,
+                        Environment.NewLine
+                        );
+                }
+            }
+            catch (Exception e)
+            {
+                throw;
             }
         }
     }
