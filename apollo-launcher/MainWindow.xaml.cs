@@ -3,20 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using static apollo_launcher.Game;
 
 namespace apollo_launcher
 {
@@ -27,10 +16,24 @@ namespace apollo_launcher
     {
 
         public List<Game> games = new List<Game>();
+        public JsonStorageManager jsm;
 
         public MainWindow()
         {
             InitializeComponent();
+            string path = AppDomain.CurrentDomain.BaseDirectory + "\\manifests";
+            if (!Directory.Exists(path)) { Directory.CreateDirectory(path); }
+            jsm = new JsonStorageManager(path);
+
+            if (Directory.GetFiles(path).Length > 0)
+            {
+                foreach (string file in Directory.GetFiles(path))
+                {
+                    GameFile j = jsm.readGameFile(path: file);
+                    Game game = new Game(j.title, j.target);
+                    addGame(game); // worked first try /s
+                }
+            }
         }
 
         private void Close_Click(object sender, RoutedEventArgs e)
@@ -63,16 +66,17 @@ namespace apollo_launcher
                 string[] name_tmp = name_split[name_split.Length - 1].Split(".")[..^1];
                 string name = string.Join(string.Empty, name_tmp);
                 string path = ofd.FileName;
+
+                if (File.Exists(jsm.JsonFolderPath + "\\" + name + ".json")) { MessageBox.Show("Application by that name exists!"); return; }
+
                 Game game = new Game(name, path);
 
                 NameInput nameInputDialog = new NameInput(game.Name);
                 if (nameInputDialog.ShowDialog() == true) { game.Name = nameInputDialog.Answer; }
                 else { return; }
 
-                games.Add(game);
-
                 // Add to column/row
-                addGameToView(game);
+                addGame(game);
                 if (games.Count == 16)
                 {
                     disableBtn(addGame_btn);
@@ -80,16 +84,10 @@ namespace apollo_launcher
             }
         }
 
-        //private Button createButton(string name, RoutedEventHandler clickHandler)
-        //{
-        //    Button button = new Button();
-        //
-        //    return button;
-        //}
-
-        private void addGameToView(Game game)
+        private void addGame(Game game)
         {
-            if (game.Icon == null)
+
+            if (game.Icon == null)  // Can't add custom icons yet
             {
                 Button button = new Button
                 {
@@ -97,7 +95,6 @@ namespace apollo_launcher
                     ContextMenu = new ContextMenu(),
                 };
                 button.Click += new RoutedEventHandler(onImage_Click);
-                //button.ContextMenu = new ContextMenu();
                 MenuItem deleteMi = new MenuItem();
                 deleteMi.Header = "Delete";
                 deleteMi.Click += deleteMi_Click;
@@ -114,15 +111,21 @@ namespace apollo_launcher
 
                     Grid.SetColumn(button, col);
                     Grid.SetRow(button, row);
-                    gamesGrid.Children.Add(button);
+
                     game.buttonRow = row;
                     game.buttonColumn = col;
+
+                    jsm.addNewGameFile(game);
+
                 } else
                 {
                     Grid.SetColumn(button, 0);
                     Grid.SetRow(button, 0);
-                    gamesGrid.Children.Add(button);
                 }
+
+                games.Add(game);
+                gamesGrid.Children.Add(button);
+                jsm.addNewGameFile(game);
             }
         }
 
@@ -131,16 +134,11 @@ namespace apollo_launcher
             MenuItem menuItem = (MenuItem)sender;
             ContextMenu contextMenu = (ContextMenu)menuItem.Parent;
             Button button = (Button)contextMenu.PlacementTarget;
+            Game game = getGameFromButton(button);
 
-            foreach (Game game in games)
-            {
-                if (game.buttonColumn == Grid.GetColumn(button) && game.buttonRow == Grid.GetRow(button))
-                {
-                    games.Remove(game);
-                    gamesGrid.Children.Remove(button);
-                    break;
-                }
-            }
+            games.Remove(game);
+            gamesGrid.Children.Remove(button);
+            jsm.removeGameFile(game);
         }
 
         private Game getGameFromButton(Button button)

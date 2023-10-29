@@ -20,7 +20,7 @@
 
                     <Grid.RowDefinitions>
                         <RowDefinition Height="15"/>
-                        <RowDefinition Height="260"/>
+                        <RowDefinition Height="275"/>
                     </Grid.RowDefinitions>
 
                     <Rectangle x:Name="resizeBar" Grid.Row="0" Fill="#787878" MouseDown="resizeBar_MouseDown" Margin="0,-10,0,0">
@@ -48,7 +48,7 @@
             </Border>
         </ControlTemplate>
     </Window.Template>
-    <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+    <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0,10,0,0">
         <!-- main content grid -->
         
         <Grid.RowDefinitions>
@@ -56,24 +56,24 @@
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
 
-        <Grid Name="gamesGrid" Grid.Row="0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition />
-                <ColumnDefinition />
-                <ColumnDefinition />
-                <ColumnDefinition />
-            </Grid.ColumnDefinitions>
+            <Grid Name="gamesGrid" Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
 
-            <Grid.RowDefinitions>
-                <RowDefinition />
-                <RowDefinition />
-                <RowDefinition />
-                <RowDefinition />
-            </Grid.RowDefinitions>
-        </Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+            </Grid>
 
         <Grid Grid.Row="1" VerticalAlignment="Bottom">
-            <Button Name="addGame_btn" Content="Add Game" Margin="0,10,203,-15" Click="addGame_Click"/>
+            <Button Name="addGame_btn" Content="Add Game" Margin="0,10,203,0" Click="addGame_Click"/>
         </Grid>
 
     </Grid>
