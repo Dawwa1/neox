@@ -1,7 +1,6 @@
 # Apollo Launcher
 
-A simple game launcher that allows you to manage and launch all your games from one place!
-
+A free and open-source application manager, allowing you to organize your games easily and quickly.
 
 # Planned support:
 - Steam
