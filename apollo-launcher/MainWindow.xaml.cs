@@ -7,7 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace apollo_launcher
+namespace neox
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
