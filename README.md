@@ -1,4 +1,4 @@
-# Apollo Launcher
+# Neox Launcher
 
 A free and open-source application manager, allowing you to organize your games easily and quickly.
 
