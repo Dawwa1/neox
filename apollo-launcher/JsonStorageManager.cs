@@ -6,7 +6,7 @@ using System.IO;
 using Newtonsoft.Json;
 using System.Diagnostics;
 
-namespace apollo_launcher
+namespace neox
 {
 
     public class GameFile

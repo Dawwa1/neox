@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows;
 
-namespace apollo_launcher
+namespace neox
 {
     public partial class NameInput : Window
     {

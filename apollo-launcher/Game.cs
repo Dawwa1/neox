@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Windows;
 
-namespace apollo_launcher
+namespace neox
 {
     public class Game
     {
