@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.IO;
 using Newtonsoft.Json;
 using System.Diagnostics;
+using System.Windows.Documents;
 
 namespace neox
 {
@@ -25,6 +27,23 @@ namespace neox
         {
             if (!Directory.Exists(json_folder_path)) { Directory.CreateDirectory(json_folder_path); }
             JsonFolderPath = json_folder_path;
+        }
+
+        public static List<Game> loadAllApps(JsonStorageManager jsm)
+        {
+            List<Game> ret = new List<Game>();
+
+            if (Directory.GetFiles(jsm.JsonFolderPath).Length > 0)
+            {
+                foreach (string file in Directory.GetFiles(jsm.JsonFolderPath))
+                {
+                    GameFile j = jsm.readGameFile(path: file);
+                    Game game = new Game(j.title, j.target);
+                    ret.Add(game);
+                }
+            }
+
+            return ret;
         }
 
         public void addNewGameFile(Game game)

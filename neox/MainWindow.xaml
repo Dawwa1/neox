@@ -50,27 +50,31 @@
     </Window.Template>
     <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0,10,0,0">
         <!-- main content grid -->
-        
+
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
 
-            <Grid Name="gamesGrid" Grid.Row="0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition />
-                    <ColumnDefinition />
-                    <ColumnDefinition />
-                </Grid.ColumnDefinitions>
+        <TabControl Name="tabControl" Background="Transparent" BorderThickness="0">
+            <TabItem Header="1">
+                <Grid Name="gamesGrid" Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
 
-                <Grid.RowDefinitions>
-                    <RowDefinition />
-                    <RowDefinition />
-                    <RowDefinition />
-                    <RowDefinition />
-                </Grid.RowDefinitions>
-            </Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                </Grid>
+            </TabItem>
+        </TabControl>
 
         <Grid Grid.Row="1" VerticalAlignment="Bottom">
             <Button Name="addGame_btn" Content="Add Game" Margin="0,10,203,0" Click="addGame_Click"/>

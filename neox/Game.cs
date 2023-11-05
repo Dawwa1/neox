@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace neox
 {
@@ -17,6 +18,21 @@ namespace neox
         public string Icon { get; set; }
         public int buttonRow { get; set; }
         public int buttonColumn { get; set; }
+        public int tab { get; set; }
+
+        static public Game getGameFromButton(Button button, List<Game> games)
+        {
+            foreach (Game game in games)
+            {
+                if (game.buttonColumn == Grid.GetColumn(button) && game.buttonRow == Grid.GetRow(button))
+                {
+                    return game;
+                }
+            }
+
+            return new Game(null, null);
+        }
+
         public Game(string name, string path, int btn_row = 0, int btn_col = 0, string icon = null, string launchOptions = null)
         {
             Name = name;
@@ -27,12 +43,12 @@ namespace neox
 
         public void launchGame()
         {
-            if (MessageBox.Show("Are you sure you want to launch " + Path, "Launch game", MessageBoxButton.YesNo) == MessageBoxResult.OK)
+            if (MessageBox.Show("Are you sure you want to launch " + this.Name, "Launch game", MessageBoxButton.YesNo) == MessageBoxResult.OK)
             {
-                Process.Start(Path);
+                Process.Start(this.Path);
             } else
             {
-                // nothing
+                return;
             }
         }
     }
