@@ -3,9 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using neox.Utility;
 
 namespace neox
 {
@@ -26,7 +28,14 @@ namespace neox
             jsm = new JsonStorageManager(path);
             foreach (Game game in JsonStorageManager.loadAllApps(jsm))
             {
-                addGame(game);
+                foreach (TabItem ti in tabControl.Items) 
+                {
+                    if (ti.Header.ToString() == game.Tab) 
+                    {
+                        Grid g = getTabsGrid(ti);
+                        addGame(game, g);
+                    } 
+                }
             }
         }
 
@@ -48,65 +57,88 @@ namespace neox
             }
         }
 
-        // TODO: Save game to whichever tab it was added to; Fix buttons on extra tabs; refactor this dogshit
-        private void addGame_Click(object sender, RoutedEventArgs e)
+        private Tuple<string, string> ofd()
         {
+            string name = "", path = "";
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.Filter = "Executables (*.exe)|*.exe";
             ofd.Multiselect = false;
 
             if (ofd.ShowDialog() == true)
             {
+                // very bad, dont feel like fixing
                 string[] name_split = ofd.FileName.Split("\\");
                 string[] name_tmp = name_split[name_split.Length - 1].Split(".")[..^1];
-                string name = string.Join(string.Empty, name_tmp);
-                string path = ofd.FileName;
+                name = string.Join(string.Empty, name_tmp);
+                path = ofd.FileName;
+            }
+
+            return Tuple.Create(name, path);
+        }
+
+        private TabItem getCurrentTab(TabControl tc)
+        {
+            if (tabControl.SelectedItem != null) { return tc.SelectedItem as TabItem; }
+            else { return tc.Items[0] as TabItem; }
+        }
+
+        private Grid getTabsGrid(TabItem ti)
+        {
+            return ti.Content as Grid;
+        }
+
+        // TODO: Save game to whichever tab it was added to; --Fix buttons on extra tabs--
+        private void addGame_Click(object sender, RoutedEventArgs e)
+        {
+            var fd = ofd();
+
+            if (fd.HasValue())
+            {
+                // very bad, dont feel like fixing
+                string name = fd.Item1, path = fd.Item2;
 
                 if (File.Exists(jsm.JsonFolderPath + "\\" + name + ".json")) { MessageBox.Show("Application by that name exists!"); return; }
 
-                Game game = new Game(name, path);
+                Game game = new Game(name, path, tab: getCurrentTab(tabControl).Header.ToString());
 
                 NameInput nameInputDialog = new NameInput(game.Name);
                 if (nameInputDialog.ShowDialog() == true) { game.Name = nameInputDialog.Answer; }
-                else { return; }
 
-                // Add to column/row
-                addGame(game);
-                //if (games.Count >= 16)
-                if(true)
+                if ((getCurrentTab(tabControl).Content as Grid).Children.Count >= 4 )
                 {
                     var lastTab = tabControl.Items[^1] as TabItem;
-                    TabItem ti = new TabItem() { Header = Int32.Parse(lastTab.Header.ToString())+1};
+                    TabItem ti = new TabItem() { Header = Int32.Parse(lastTab.Header.ToString()) + 1 };
                     Grid grid = new Grid();
 
                     for (int i = 0; i < 8; i++)
                     {
-                        if (i != 4)
+                        if (i < 4)
                         {
                             grid.RowDefinitions.Add(new RowDefinition());
+                            Debug.WriteLine("Row created {0}", i);
                         }
                         else
                         {
                             grid.ColumnDefinitions.Add(new ColumnDefinition());
+                            Debug.WriteLine("Col. created {0}", i);
                         }
                     }
 
                     ti.Content = grid;
                     tabControl.Items.Add(ti);
+
+                    tabControl.SelectedIndex = tabControl.Items.Count-1;
                 }
+
+                addGame(game, getCurrentTab(tabControl).Content as Grid);
             }
         }
 
-        private void addGame(Game game)
+        private void addGame(Game game, Grid grid)
         {
-            Grid grid;
             if (game.Icon == null)  // Can't add custom icons yet
             {
-                if (tabControl.SelectedItem != null) { grid = (tabControl.SelectedItem as TabItem).Content as Grid; }
-                else
-                {
-                    grid = (tabControl.Items[0] as TabItem).Content as Grid;
-                }
+                // Creates button for program
                 Button button = new Button
                 {
                     Content = game.Name,
@@ -123,16 +155,16 @@ namespace neox
 
                     int row = Grid.GetRow(child);
                     int col = Grid.GetColumn(child);
+
+                    // increments the next added program based on the row/col of the last one
                     if (col == 3) { row += 1; col = 0; }
                     else if (child == null) { col = 0; row = 0; }
                     else { col += 1; }
 
                     Grid.SetColumn(button, col);
                     Grid.SetRow(button, row);
-
-                    game.buttonRow = row;
-                    game.buttonColumn = col;
                 }
+
                 grid.Children.Add(button);
                 games.Add(game);
                 this.jsm.addNewGameFile(game);
@@ -147,14 +179,8 @@ namespace neox
             Game game = Game.getGameFromButton(button, games);
 
             games.Remove(game);
-            gamesGrid.Children.Remove(button);
+            getTabsGrid(getCurrentTab(tabControl)).Children.Remove(button);
             this.jsm.removeGameFile(game);
-        }
-
-        private void disableBtn(Button btn)
-        {
-            btn.Opacity = 0.3;
-            btn.IsEnabled = false;
         }
 
         private void onImage_Click(object sender, RoutedEventArgs e)
@@ -162,6 +188,15 @@ namespace neox
             Button btn = (Button)sender;
             Game game = Game.getGameFromButton(btn, games);
             game.launchGame();
+        }
+    }
+
+    // thank you stack overflow
+    public static class TupleExtensions
+    {
+        public static bool HasValue(this Tuple<string, string> tuple)
+        {
+            return !string.IsNullOrEmpty(tuple?.Item1) && !string.IsNullOrEmpty(tuple?.Item2);
         }
     }
 }

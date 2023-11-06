@@ -7,8 +7,9 @@ using System.IO;
 using Newtonsoft.Json;
 using System.Diagnostics;
 using System.Windows.Documents;
+using neox;
 
-namespace neox
+namespace neox.Utility
 {
 
     public class GameFile
@@ -16,12 +17,13 @@ namespace neox
         public string title;
         public string target;
         public string launchOptions;
+        public string tab;
     }
 
     public class JsonStorageManager
     {
 
-        public string JsonFolderPath {  get; set; }
+        public string JsonFolderPath { get; set; }
 
         public JsonStorageManager(string json_folder_path)
         {
@@ -38,7 +40,7 @@ namespace neox
                 foreach (string file in Directory.GetFiles(jsm.JsonFolderPath))
                 {
                     GameFile j = jsm.readGameFile(path: file);
-                    Game game = new Game(j.title, j.target);
+                    Game game = new Game(j.title, j.target, j.tab);
                     ret.Add(game);
                 }
             }
@@ -53,7 +55,8 @@ namespace neox
             {
                 ["title"] = game.Name,
                 ["target"] = game.Path,
-                ["launchOptions"] = game.LaunchOptions
+                ["launchOptions"] = game.LaunchOptions,
+                ["tab"] = game.Tab
             };
 
             var jOptions = new JsonSerializerOptions() { WriteIndented = true };
@@ -73,7 +76,7 @@ namespace neox
             }
         }
 
-        public GameFile readGameFile(Game ?game = null, string ?path = null)
+        public GameFile readGameFile(Game? game = null, string? path = null)
         {
             string jString;
             if (game != null)
@@ -86,8 +89,6 @@ namespace neox
             }
 
             GameFile gameFileJson = JsonConvert.DeserializeObject<GameFile>(jString);
-            Debug.WriteLine(jString);
-            Debug.WriteLine(gameFileJson);
             return gameFileJson;
         }
 

@@ -18,7 +18,7 @@ namespace neox
         public string Icon { get; set; }
         public int buttonRow { get; set; }
         public int buttonColumn { get; set; }
-        public int tab { get; set; }
+        public string Tab { get; set; }
 
         static public Game getGameFromButton(Button button, List<Game> games)
         {
@@ -30,15 +30,16 @@ namespace neox
                 }
             }
 
-            return new Game(null, null);
+            return new Game(null, null, null);
         }
 
-        public Game(string name, string path, int btn_row = 0, int btn_col = 0, string icon = null, string launchOptions = null)
+        public Game(string name, string path, string tab, int btn_row = 0, int btn_col = 0, string icon = null, string launchOptions = null)
         {
             Name = name;
             Path = path;
             Icon = icon;
             LaunchOptions = launchOptions;
+            Tab = tab;
         }
 
         public void launchGame()
