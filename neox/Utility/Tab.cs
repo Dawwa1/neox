@@ -15,6 +15,7 @@ namespace neox.Utility
         public string Header { get; set; }
         public Grid? Content { get; set; }
         public TabItem? Item { get; set; }
+        public static List<Tab>? Tab_List = new List<Tab>();
 
         public Tab(TabControl tabControl, string header, Grid? content = null)
         {
@@ -26,8 +27,12 @@ namespace neox.Utility
                 Header = header,
                 Content = content
             };
+        }
 
-            //tabControl.Items.Add(Item);
+        public static Tab FindTabByHeader(string header)
+        {
+            foreach (Tab tab in Tab_List) { if (tab.Header == header) { return tab; } }
+            return null;
         }
 
         public void FocusOnTab(int tabIndex=0)
@@ -40,10 +45,6 @@ namespace neox.Utility
             {
                 this.TabControl.SelectedIndex = this.TabControl.Items.Count - 1;
             }
-
-            //var selected_item = this.TabControl.SelectedItem as TabItem;
-            //
-            //return new Tab(this.TabControl, selected_item.Header.ToString(), selected_item.Content as Grid);
 
         }
 

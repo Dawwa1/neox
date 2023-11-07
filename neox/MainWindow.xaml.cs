@@ -80,6 +80,9 @@ namespace neox
                 string[] name_tmp = name_split[name_split.Length - 1].Split(".")[..^1];
                 name = string.Join(string.Empty, name_tmp);
                 path = ofd.FileName;
+
+                Debug.WriteLine(name);
+                Debug.WriteLine(path);
             }
 
             return Tuple.Create(name, path);
@@ -114,6 +117,7 @@ namespace neox
 
             var t = new Tab(tabControl, header.ToString(), grid);
             tc.Items.Add(t.Item);
+            Tab.Tab_List.Add(t);
 
             return t;
         }
@@ -144,13 +148,17 @@ namespace neox
         {
             //Adds a game to Grid
 
-            // Creates button for program
-            if (tab.IsFull())
+            // Tab if tab is full
+            foreach (Tab t in Tab.Tab_List) 
             {
-                tab = createNewTab(tabControl);
-                tab.FocusOnTab();
+                if (t.IsFull())
+                {
+                    tab = createNewTab(tabControl);
+                    tab.FocusOnTab();
+                }
             }
 
+            // Creates button for program
             Button button = new Button
             {
                 Content = game.Name,
@@ -162,7 +170,7 @@ namespace neox
             deleteMi.Click += deleteMi_Click;
             button.ContextMenu.Items.Add(deleteMi);
 
-            dynamic child = null;
+            UIElement child = null;
             int row = 0;
             int col = 0;
             if (tab.Content.Children.Count > 0)
