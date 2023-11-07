@@ -24,6 +24,8 @@ namespace neox
         {
             foreach (Game game in games)
             {
+                Debug.WriteLine(game.Name);
+                Grid grid = button.Parent as Grid;
                 if (game.buttonColumn == Grid.GetColumn(button) && game.buttonRow == Grid.GetRow(button))
                 {
                     return game;

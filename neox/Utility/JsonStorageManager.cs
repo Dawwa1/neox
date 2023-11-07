@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using System.Diagnostics;
 using System.Windows.Documents;
 using neox;
+using System.Linq;
 
 namespace neox.Utility
 {
@@ -37,7 +38,7 @@ namespace neox.Utility
 
             if (Directory.GetFiles(jsm.JsonFolderPath).Length > 0)
             {
-                foreach (string file in Directory.GetFiles(jsm.JsonFolderPath))
+                foreach (string file in Directory.GetFiles(jsm.JsonFolderPath).OrderByDescending(d => new FileInfo(d).CreationTime).Reverse())
                 {
                     GameFile j = jsm.readGameFile(path: file);
                     Game game = new Game(j.title, j.target, j.tab);
