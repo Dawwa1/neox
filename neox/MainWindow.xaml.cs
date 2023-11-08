@@ -149,13 +149,9 @@ namespace neox
             //Adds a game to Grid
 
             // Tab if tab is full
-            foreach (Tab t in Tab.Tab_List) 
+            for (int i=0;i<tabControl.Items.Count;i++)
             {
-                if (t.IsFull())
-                {
-                    tab = createNewTab(tabControl);
-                    tab.FocusOnTab();
-                }
+                
             }
 
             // Creates button for program
