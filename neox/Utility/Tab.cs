@@ -29,6 +29,11 @@ namespace neox.Utility
             };
         }
 
+        public static bool IsFull(Grid g)
+        {
+            return g.Children.Count >= Tab.MAX_GAME_COUNT;
+        }
+
         public static Tab FindTabByHeader(string header)
         {
             foreach (Tab tab in Tab_List) { if (tab.Header == header) { return tab; } }
