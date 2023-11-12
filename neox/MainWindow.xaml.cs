@@ -17,7 +17,7 @@ namespace neox
     public partial class MainWindow : Window
     {
 
-        public List<Game> games = new List<Game>();
+        public List<Program> progs = new List<Program>();
         public JsonStorageManager jsm;
         
 
@@ -27,25 +27,19 @@ namespace neox
             string path = AppDomain.CurrentDomain.BaseDirectory + "\\manifests";
             if (!Directory.Exists(path)) { Directory.CreateDirectory(path); }
             jsm = new JsonStorageManager(path);
-            foreach (Game game in JsonStorageManager.loadAllApps(jsm))
+            foreach (Program prog in JsonStorageManager.GetAllPrograms(jsm))
             {
-                Tab tab = getCurrentTab(tabControl);
-                if (int16(game.Tab) > tab.HeaderAsInt())
+                Tab tab = GetCurrentTab(tabControl);
+                if (Int16.Parse(prog.Tab) > tab.HeaderAsInt())
                 {
-                    while (tab.HeaderAsInt() < int16(game.Tab))
+                    while (tab.HeaderAsInt() < Int16.Parse(prog.Tab))
                     {
-                        tab = createNewTab(tabControl);
+                        tab = CreateNewTab(tabControl);
                     }
                 }
 
-                addGame(game, tab);
+                DrawProgramButton(prog, tab);
             }
-        }
-
-        private static Int16 int16(string i)
-        {
-            if (Int32.Parse(i) <= Int16.MaxValue && Int32.Parse(i) != 0) { return Int16.Parse(i); }
-            return Int16.MaxValue;
         }
 
         private void Close_Click(object sender, RoutedEventArgs e)
@@ -88,19 +82,19 @@ namespace neox
             return Tuple.Create(name, path);
         }
 
-        private Tab getCurrentTab(TabControl tc)
+        private Tab GetCurrentTab(TabControl tc)
         {
             TabItem tab;
-            if (tabControl.SelectedItem != null) { tab = tc.SelectedItem as TabItem; }
-            else { tab = tc.Items[0] as TabItem; }
+            if (tabControl.SelectedItem != null) { tab = (TabItem)tc.SelectedItem; }
+            else { tab = (TabItem)tc.Items[0]; }
 
-            return new Tab(tabControl, tab.Header.ToString(), tab.Content as Grid);
+            return new Tab(tabControl, tab);
         }
 
-        private Tab createNewTab(TabControl tc)
+        private Tab CreateNewTab(TabControl tc)
         {
-            var lastTab = tc.Items[^1] as TabItem;
-            int header = int16(lastTab.Header.ToString()) + 1;
+            var lastTab = (TabItem)tc.Items[^1];
+            int header = Int16.Parse(new Tab(tabControl, lastTab).Header) + 1;
             Grid grid = new Grid();
 
             for (int i = 0; i < 8; i++)
@@ -115,49 +109,19 @@ namespace neox
                 }
             }
 
-            var t = new Tab(tabControl, header.ToString(), grid);
-            tc.Items.Add(t.Item);
+            var t = new Tab(tabControl, new TabItem() { Header = header.ToString(), Content=grid });
+            tc.Items.Add(t);
             Tab.Tab_List.Add(t);
 
             return t;
         }
 
-        // TODO: Save game to whichever tab it was added to; --Fix buttons on extra tabs--
-        private void addGame_Click(object sender, RoutedEventArgs e)
+        private void DrawProgramButton(Program prog, Tab tab)
         {
-            var fd = ofd();
-
-            if (fd.HasValue())
-            {
-                // ~~very bad, dont feel like fixing~~
-                // edit: a little less bad then previously
-                string name = fd.Item1, path = fd.Item2;
-
-                if (File.Exists(jsm.JsonFolderPath + "\\" + name + ".json")) { MessageBox.Show("Application by that name exists!"); return; }
-
-                Game game = new Game(name, path, tab: getCurrentTab(tabControl).Header);
-
-                NameInput nameInputDialog = new NameInput(game.Name);
-                if (nameInputDialog.ShowDialog() == true) { game.Name = nameInputDialog.Answer; }
-
-                addGame(game, getCurrentTab(tabControl));
-            }
-        }
-
-        private void addGame(Game game, Tab tab)
-        {
-            //Adds a game to Grid
-
-            // Tab if tab is full
-            for (int i=0;i<tabControl.Items.Count;i++)
-            {
-                
-            }
-
             // Creates button for program
             Button button = new Button
             {
-                Content = game.Name,
+                Content = prog.Name,
                 ContextMenu = new ContextMenu(),
             };
             button.Click += new RoutedEventHandler(onImage_Click);
@@ -166,7 +130,7 @@ namespace neox
             deleteMi.Click += deleteMi_Click;
             button.ContextMenu.Items.Add(deleteMi);
 
-            UIElement child = null;
+            UIElement? child = null;
             int row = 0;
             int col = 0;
             if (tab.Content.Children.Count > 0)
@@ -182,12 +146,12 @@ namespace neox
 
             Grid.SetColumn(button, col);
             Grid.SetRow(button, row);
-            game.buttonColumn = col;
-            game.buttonRow = row;
+            prog.ButtonColumn = col;
+            prog.ButtonRow = row;
 
             tab.AddButton(button);
-            games.Add(game);
-            this.jsm.addNewGameFile(game);
+            progs.Add(prog);
+            this.jsm.AddProgram(prog);
         }
 
         private void deleteMi_Click(object sender, RoutedEventArgs e)
@@ -199,13 +163,13 @@ namespace neox
             Debug.WriteLine(Grid.GetColumn(button));
             Debug.WriteLine(Grid.GetRow(button));
 
-            Game game = Game.getGameFromButton(button, games);
+            Program prog = Program.GetProgramFromButton(button, progs);
 
-            Tab tab = getCurrentTab(tabControl);
+            Tab tab = GetCurrentTab(tabControl);
 
-            games.Remove(game);
+            progs.Remove(prog);
             tab.RemoveButton(button);
-            this.jsm.removeGameFile(game);
+            this.jsm.RemoveProgramFile(prog);
 
             if (tab.Content.Children.Count == 0)
             {
@@ -216,8 +180,8 @@ namespace neox
         private void onImage_Click(object sender, RoutedEventArgs e)
         {
             Button btn = (Button)sender;
-            Game game = Game.getGameFromButton(btn, games);
-            game.launchGame();
+            Program prog = Program.GetProgramFromButton(btn, progs);
+            prog.Launch();
         }
     }
 

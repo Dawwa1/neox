@@ -7,44 +7,48 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
+using neox.Utility;
+using System.IO;
 
 namespace neox
 {
-    public class Game
+    public class Program
     {
         public string Name { get; set; }
         public string Path { get; set; }
-        public string LaunchOptions { get; set; }
-        public string Icon { get; set; }
-        public int buttonRow { get; set; }
-        public int buttonColumn { get; set; }
+        public string? LaunchOptions { get; set; }
+        public string? Icon { get; set; }
+        public int ButtonRow { get; set; }
+        public int ButtonColumn { get; set; }
         public string Tab { get; set; }
 
-        static public Game getGameFromButton(Button button, List<Game> games)
+        public static Program GetProgramFromButton(Button button, List<Program> progs)
         {
-            foreach (Game game in games)
+            foreach (Program prog in progs)
             {
-                if (game.Name == button.Content)
+                if (prog.Name == button.Content.ToString())
                 {
-                    return game;
+                    return prog;
                 }
             }
 
-            return new Game(null, null, null);
+            throw new ArgumentException("No button found by name + " + button.Name);
         }
 
-        public Game(string name, string path, string tab, int btn_row = 0, int btn_col = 0, string icon = null, string launchOptions = null)
+        public Program(string name, string path, string tab, int btn_row = 0, int btn_col = 0, string? icon = null, string? launchOptions = null)
         {
             Name = name;
             Path = path;
             Icon = icon;
             LaunchOptions = launchOptions;
             Tab = tab;
+            ButtonRow = btn_row;
+            ButtonColumn = btn_col;
         }
 
-        public void launchGame()
+        public void Launch()
         {
-            if (MessageBox.Show("Are you sure you want to launch " + this.Name, "Launch game", MessageBoxButton.YesNo) == MessageBoxResult.OK)
+            if (MessageBox.Show("Are you sure you want to launch " + this.Name, "Launch prog", MessageBoxButton.YesNo) == MessageBoxResult.OK)
             {
                 Process.Start(this.Path);
             } else
