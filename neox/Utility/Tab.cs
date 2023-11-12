@@ -10,26 +10,31 @@ namespace neox.Utility
     internal class Tab
     {
 
-        static readonly int MAX_GAME_COUNT = 4;
+        static readonly int MAX_prog_COUNT = 4;
         public TabControl TabControl {  get; set; }
         public string Header { get; set; }
-        public Grid? Content { get; set; }
+        public Grid Content { get; set; }
         public TabItem? Item { get; set; }
-        public static List<Tab>? Tab_List = new List<Tab>();
+        public static List<Tab> Tab_List = new List<Tab>();
 
-        public Tab(TabControl tabControl, string header, Grid? content = null)
+        public Tab(TabControl tabControl, TabItem ti)
         {
             TabControl = tabControl;
-            Header = header;
-            Content = content;
+            Header = ti.Header.ToString() ?? "";
+            Content = ti.Content as Grid ?? new Grid();
             Item = new TabItem()
             {
-                Header = header,
-                Content = content
+                Header = Header,
+                Content = Content
             };
         }
 
-        public static Tab FindTabByHeader(string header)
+        public static bool IsFull(Grid g)
+        {
+            return g.Children.Count >= Tab.MAX_prog_COUNT;
+        }
+
+        public static Tab? FindTabByHeader(string header)
         {
             foreach (Tab tab in Tab_List) { if (tab.Header == header) { return tab; } }
             return null;
@@ -70,7 +75,7 @@ namespace neox.Utility
 
         public bool IsFull()
         {
-            return GetContent().Children.Count >= Tab.MAX_GAME_COUNT;
+            return GetContent().Children.Count >= Tab.MAX_prog_COUNT;
         }
     }
 }

@@ -14,7 +14,7 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <Label Grid.Column="1">Enter Game Name:</Label>
+        <Label Grid.Column="1">Enter prog Name:</Label>
         <TextBox Name="txtName" Grid.Column="1" Grid.Row="1" MinWidth="250">Answer</TextBox>
 
         <WrapPanel Grid.Row="2" Grid.ColumnSpan="2" HorizontalAlignment="Right" Margin="0,15,0,0">

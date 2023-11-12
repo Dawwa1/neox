@@ -9,22 +9,26 @@ using System.Diagnostics;
 using System.Windows.Documents;
 using neox;
 using System.Linq;
+using System.Windows;
+using System.Xml.Linq;
 
 namespace neox.Utility
 {
 
-    public class GameFile
+    public class ProgramFile
     {
-        public string title;
-        public string target;
-        public string launchOptions;
-        public string tab;
+        public readonly string title = "";
+        public readonly string target = "";
+        public readonly string launchOptions = "";
+        public readonly string tab = "";
+        public readonly string row = "";
+        public readonly string col = "";
     }
 
     public class JsonStorageManager
     {
 
-        public string JsonFolderPath { get; set; }
+        public static string JsonFolderPath = "";
 
         public JsonStorageManager(string json_folder_path)
         {
@@ -32,77 +36,79 @@ namespace neox.Utility
             JsonFolderPath = json_folder_path;
         }
 
-        public static List<Game> loadAllApps(JsonStorageManager jsm)
+        public static List<Program> GetAllPrograms(JsonStorageManager jsm)
         {
-            List<Game> ret = new List<Game>();
+            List<Program> ret = new List<Program>();
+            string[] folder = JsonStorageManager.GetFolder();
 
-            if (Directory.GetFiles(jsm.JsonFolderPath).Length > 0)
+            if (folder.Length > 0)
             {
-                foreach (string file in Directory.GetFiles(jsm.JsonFolderPath).OrderByDescending(d => new FileInfo(d).CreationTime).Reverse())
+                foreach (string file in folder)
                 {
-                    GameFile j = jsm.readGameFile(path: file);
-                    Game game = new Game(j.title, j.target, j.tab);
-                    ret.Add(game);
+                    ProgramFile j = jsm.ReadProgramFile(file);
+                    Program prog = new Program(j.title, j.target, j.tab);
+                    ret.Add(prog);
                 }
             }
 
             return ret;
         }
 
-        public void addNewGameFile(Game game)
+        public static string[] GetFolder()
         {
+            return Directory.GetFiles(JsonFolderPath).OrderByDescending(d => new FileInfo(d).CreationTime).Reverse().ToArray();
+        }
 
+        public static bool DoesProgramExist(Program prog)
+        {
+            return File.Exists(JsonStorageManager.JsonFolderPath + "\\" + prog.Name + ".json");
+        }
+
+        public static Program? GetProgramFromPath(string path, List<Program> ProgramList)
+        {
+            foreach (Program prog in ProgramList)
+            {
+                if (path == prog.Path) { return prog; }
+            }
+
+            return null;
+        }
+
+        public void AddProgram(Program prog)
+        {
             var j = new JsonObject()
             {
-                ["title"] = game.Name,
-                ["target"] = game.Path,
-                ["launchOptions"] = game.LaunchOptions,
-                ["tab"] = game.Tab
+                ["title"] = prog.Name,
+                ["target"] = prog.Path,
+                ["launchOptions"] = prog.LaunchOptions,
+                ["tab"] = prog.Tab,
+                ["row"] = prog.ButtonRow,
+                ["col"] = prog.ButtonColumn
             };
 
             var jOptions = new JsonSerializerOptions() { WriteIndented = true };
             var jString = j.ToJsonString(jOptions);
 
-            File.WriteAllText(JsonFolderPath + "\\" + game.Name + ".json", jString);
+            File.WriteAllText(JsonFolderPath + "\\" + prog.Name + ".json", jString);
         }
 
-        public void removeGameFile(Game game)
+        public void RemoveProgramFile(Program prog)
         {
             foreach (string file in Directory.GetFiles(JsonFolderPath))
             {
-                if (file.Contains(game.Name))
+                if (file.Contains(prog.Name))
                 {
                     File.Delete(file);
                 }
             }
         }
 
-        public GameFile readGameFile(Game? game = null, string? path = null)
+        public ProgramFile ReadProgramFile(string path)
         {
-            string jString;
-            if (game != null)
-            {
-                jString = File.ReadAllText(findGameFile(game));
-            }
-            else
-            {
-                jString = File.ReadAllText(path);
-            }
+            string jString = File.ReadAllText(path);
 
-            GameFile gameFileJson = JsonConvert.DeserializeObject<GameFile>(jString);
-            return gameFileJson;
-        }
-
-        public string findGameFile(Game game)
-        {
-            foreach (string file in Directory.GetFiles(JsonFolderPath))
-            {
-                if (file.Contains(game.Name))
-                {
-                    return file;
-                }
-            }
-            return "";
+            ProgramFile ProgFile = JsonConvert.DeserializeObject<ProgramFile>(jString) ?? new ProgramFile();
+            return ProgFile;
         }
     }
 }
